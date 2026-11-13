@@ -217,7 +217,9 @@ class Chebyshev(Polynomial):
         return 1 / sp.sqrt(1 - x**2)
 
     def L2_norm_sq(self, N: int) -> np.ndarray:
-        raise NotImplementedError
+        norm_arr = np.full(N+1, np.pi/2.0)
+        norm_arr[0] = np.pi
+        return norm_arr
 
     def eval(self, uh: np.ndarray, xj: np.ndarray | float) -> np.ndarray:
         raise NotImplementedError
