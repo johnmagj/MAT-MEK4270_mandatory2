@@ -167,8 +167,9 @@ class Polynomial(FunctionSpace):
         return self.basis_function(j).deriv(k)
 
     def mass_matrix(self) -> sparse.spmatrix:
-        
-        raise NotImplementedError
+        # For orthogonal basis functions the mass matrix is: (psi_j, psi_i) = ||psi_i||^2 * delta_ij
+        prod = self.L2_norm_sq(self.N)*self.domain_factor
+        return sparse.diags(prod, format="csr")
 
 
 class Legendre(Polynomial):
