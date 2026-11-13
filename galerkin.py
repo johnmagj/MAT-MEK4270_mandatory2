@@ -222,7 +222,9 @@ class Chebyshev(Polynomial):
         return norm_arr
 
     def eval(self, uh: np.ndarray, xj: np.ndarray | float) -> np.ndarray:
-        raise NotImplementedError
+        xj = np.atleast_1d(xj)
+        Xj = map_reference_domain(xj, self.domain, self.reference_domain)
+        return np.polynomial.chebyshev.chebval(Xj, uh)
 
     def inner_product(self, u: sp.Expr) -> np.ndarray:
         """Inner products (u, T_i), via the substitution x = cos(theta), integrating over
@@ -302,20 +304,32 @@ class Cosines(Trigonometric):
     def __init__(
         self, N: int, domain: Domain = (0, 1), bc: BC = (0, 0), constraint: int = 0
     ) -> None:
-        raise NotImplementedError
+        Trigonometric.__init__(self, N, domain=domain)
+        self.B = Neumann(bc, domain, self.reference_domain)
 
     @overload
     def basis_function(self, j: int, sympy: Literal[True]) -> sp.Expr: ...
     @overload
     def basis_function(self, j: int, sympy: Literal[False] = False) -> BasisCallable: ...
     def basis_function(self, j, sympy=False):
-        raise NotImplementedError
+        if sympy:
+            return sp.cos((j) * sp.pi * x)
+        return lambda Xj: np.cos((j) * np.pi * Xj)
 
     def derivative_basis_function(self, j: int, k: int = 1) -> BasisCallable:
-        raise NotImplementedError
+        if k == 0:
+            return lambda Xj: np.cos((j) * np.pi * Xj)
+        else:
+            scale = ((j) * np.pi) ** k * {0: -1, 1: 1}[(k // 2) % 2]
+            if k % 2 == 0:
+                return lambda Xj: scale * np.cos((j) * np.pi * Xj)
+            else:
+                return lambda Xj: scale * np.sin((j) * np.pi * Xj)
 
     def L2_norm_sq(self, N: int) -> np.ndarray:
-        raise NotImplementedError
+        norm_arr = np.full(N+1, 0.5)
+        norm_arr[0] = 1.0
+        return norm_arr
 
 
 # Create classes to hold the boundary function
