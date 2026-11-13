@@ -188,7 +188,9 @@ class Legendre(Polynomial):
         return Leg.basis(j)
 
     def L2_norm_sq(self, N: int) -> np.ndarray:
-        raise NotImplementedError
+        #Return array were each element correspond to L2 for given index j
+        j = np.arange(0, N+1, 1)
+        return 2.0/(2*j + 1)
 
     def eval(self, uh: np.ndarray, xj: np.ndarray | float) -> np.ndarray:
         xj = np.atleast_1d(xj)
