@@ -430,27 +430,21 @@ class DirichletLegendre(Composite, Legendre):
     @overload
     def basis_function(self, j: int, sympy: Literal[False] = False) -> Leg: ...
     def basis_function(self, j, sympy=False):
-        if sympy:
-            return sp.cos(j * sp.acos(x)) - sp.cos((j + 2) * sp.acos(x))
-        return Leg.basis(j) - Leg.basis(j + 2)
+        raise NotImplementedError
 
 
 class NeumannLegendre(Composite, Legendre):
     def __init__(
         self, N: int, domain: Domain = (-1, 1), bc: BC = (0, 0), constraint: int = 0
     ) -> None:
-        Legendre.__init__(self, N, domain=domain)
-        self.B = Neumann(bc, domain, self.reference_domain)
-        self.S = sparse.diags((1., -1.), (0, 2), shape=(N + 1, N + 3), format="csr")
+        raise NotImplementedError
 
     @overload
     def basis_function(self, j: int, sympy: Literal[True]) -> sp.Expr: ...
     @overload
     def basis_function(self, j: int, sympy: Literal[False] = False) -> Leg: ...
     def basis_function(self, j, sympy=False):
-        if sympy:
-            return sp.cos(j * sp.acos(x)) - sp.cos((j + 2) * sp.acos(x))
-        return Leg.basis(j) - Leg.basis(j + 2)
+        raise NotImplementedError
 
 
 class DirichletChebyshev(Composite, Chebyshev):
@@ -473,18 +467,14 @@ class NeumannChebyshev(Composite, Chebyshev):
     def __init__(
         self, N: int, domain: Domain = (-1, 1), bc: BC = (0, 0), constraint: int = 0
     ) -> None:
-        Chebyshev.__init__(self, N, domain=domain)
-        self.B = Dirichlet(bc, domain, self.reference_domain)
-        self.S = sparse.diags((1., -1.), (0, 2), shape=(N + 1, N + 3), format="csr")
+        raise NotImplementedError
 
     @overload
     def basis_function(self, j: int | sp.Symbol, sympy: Literal[True]) -> sp.Expr: ...
     @overload
     def basis_function(self, j: int, sympy: Literal[False] = False) -> Cheb: ...
     def basis_function(self, j, sympy=False):
-        if sympy:
-            return sp.cos(j * sp.acos(x)) - sp.cos((j + 2) * sp.acos(x))
-        return Cheb.basis(j) - Cheb.basis(j + 2)
+        raise NotImplementedError
 
 
 class BasisFunction:
