@@ -2,7 +2,7 @@
 
 Change badge links below to reflect you own fork and then delete this line!
 
-[![MAT-MEK4270 mandatory 2](https://github.com/johnmagj/MAT-MEK_mandatory2/actions/workflows/main.yml/badge.svg)](https://github.com/ohnmagj/MAT-MEK-4270_mandatory2/actions/workflows/main.yml)
+[![MAT-MEK4270 mandatory 1](https://github.com/johnmagj/MAT-MEK4270_mandatory2/actions/workflows/main.yml/badge.svg?branch=post_deadline)](https://github.com/johnmagj/MAT-MEK4270_mandatory2/actions/workflows/main.yml)
 Please see instructions in [the book](https://matmek-4270.github.io/matmek4270-book/mandatory2.html).
 
 
