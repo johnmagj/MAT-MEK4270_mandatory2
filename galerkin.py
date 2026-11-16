@@ -167,9 +167,7 @@ class Polynomial(FunctionSpace):
         return self.basis_function(j).deriv(k)
 
     def mass_matrix(self) -> sparse.spmatrix:
-        # For orthogonal basis functions the mass matrix is: (psi_j, psi_i) = ||psi_i||^2 * delta_ij
-        prod = self.L2_norm_sq(self.N)*self.domain_factor
-        return sparse.diags(prod, format="csr")
+        return sparse.diags(self.L2_norm_sq(self.N + 1), format="csr")
 
 
 class Legendre(Polynomial):
@@ -189,8 +187,8 @@ class Legendre(Polynomial):
 
     def L2_norm_sq(self, N: int) -> np.ndarray:
         #Return array were each element correspond to L2 for given index j
-        j = np.arange(0, N+1, 1)
-        return 2.0/(2*j + 1)
+        j = np.arange(0, N, 1)
+        return 2.0/(2.0*j + 1.0)
 
     def eval(self, uh: np.ndarray, xj: np.ndarray | float) -> np.ndarray:
         xj = np.atleast_1d(xj)
@@ -217,7 +215,7 @@ class Chebyshev(Polynomial):
         return 1 / sp.sqrt(1 - x**2)
 
     def L2_norm_sq(self, N: int) -> np.ndarray:
-        norm_arr = np.full(N+1, np.pi/2.0)
+        norm_arr = np.full(N, np.pi/2.0)
         norm_arr[0] = np.pi
         return norm_arr
 
@@ -317,17 +315,14 @@ class Cosines(Trigonometric):
         return lambda Xj: np.cos((j) * np.pi * Xj)
 
     def derivative_basis_function(self, j: int, k: int = 1) -> BasisCallable:
-        if k == 0:
-            return lambda Xj: np.cos((j) * np.pi * Xj)
+        scale = ((j) * np.pi) ** k * {0: 1, 1: -1}[(k // 2) % 2]
+        if k % 2 == 0:
+            return lambda Xj: scale * np.cos(j * np.pi * Xj)
         else:
-            scale = ((j) * np.pi) ** k * {0: -1, 1: 1}[(k // 2) % 2]
-            if k % 2 == 0:
-                return lambda Xj: scale * np.cos((j) * np.pi * Xj)
-            else:
-                return lambda Xj: scale * np.sin((j) * np.pi * Xj)
+            return lambda Xj: -scale * np.sin(j * np.pi * Xj)
 
     def L2_norm_sq(self, N: int) -> np.ndarray:
-        norm_arr = np.full(N+1, 0.5)
+        norm_arr = np.full(N, 0.5)
         norm_arr[0] = 1.0
         return norm_arr
 
