@@ -439,14 +439,22 @@ class NeumannLegendre(Composite, Legendre):
     def __init__(
         self, N: int, domain: Domain = (-1, 1), bc: BC = (0, 0), constraint: int = 0
     ) -> None:
-        raise NotImplementedError
+        Legendre.__init__(self, N, domain=domain)
+        self.B = Neumann(bc, domain, self.reference_domain)
+
+        j = np.arange(N + 1)
+        d_elem = np.ones(N + 1)
+        bases = -(j*(j+1))/((j+2)*(j+3))
+        self.S = sparse.diags((d_elem, bases), (0, 2), shape=(N + 1, N + 3), format="csr")
 
     @overload
     def basis_function(self, j: int, sympy: Literal[True]) -> sp.Expr: ...
     @overload
     def basis_function(self, j: int, sympy: Literal[False] = False) -> Leg: ...
     def basis_function(self, j, sympy=False):
-        raise NotImplementedError
+        if sympy:
+            return sp.legendre(j, x) - ((j*(j+1))/((j+2)*(j+3)))*sp.legendre(j + 2, x)
+        return Leg.basis(j) - ((j*(j+1))/((j+2)*(j+3)))*Leg.basis(j + 2)
 
 
 class DirichletChebyshev(Composite, Chebyshev):
@@ -469,14 +477,22 @@ class NeumannChebyshev(Composite, Chebyshev):
     def __init__(
         self, N: int, domain: Domain = (-1, 1), bc: BC = (0, 0), constraint: int = 0
     ) -> None:
-        raise NotImplementedError
+        Chebyshev.__init__(self, N, domain=domain)
+        self.B = Neumann(bc, domain, self.reference_domain)
+
+        j = np.arange(N + 1)
+        d_elem = np.ones(N + 1)
+        bases = -(j/(j+2))**2
+        self.S = sparse.diags((d_elem, bases), (0, 2), shape=(N + 1, N + 3), format="csr")
 
     @overload
     def basis_function(self, j: int | sp.Symbol, sympy: Literal[True]) -> sp.Expr: ...
     @overload
     def basis_function(self, j: int, sympy: Literal[False] = False) -> Cheb: ...
     def basis_function(self, j, sympy=False):
-        raise NotImplementedError
+        if sympy:
+            return sp.cos(j * sp.acos(x)) - (j/(j+2))**2 * sp.cos((j + 2) * sp.acos(x))
+        return Cheb.basis(j) - (j/(j+2))**2 * Cheb.basis(j + 2)
 
 
 class BasisFunction:
